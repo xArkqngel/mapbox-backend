@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba de WebSockets</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Prueba de WebSockets con Socket.IO</h1>
+    <div id="messages"></div>
+
+    <script>
+        // Conectarse al servidor Socket.IO
+        const socket = io("http://localhost:3000", {
+            // Opcional: Enviar el token JWT si es necesario
+            auth: {
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQzNTIyMTY4LCJleHAiOjE3NDM2MDg1Njh9.ICPSS7F_Ea9wQqtU73N-v4LTURFzUo5kLm5I7X6jjjs"  // Reemplaza con un token válido
+            }
+        });
+
+        // Evento cuando se conecta al servidor
+        socket.on("connect", () => {
+            logMessage("✅ Conectado al servidor. ID: " + socket.id);
+        });
+
+        // Evento cuando hay un nuevo activo
+        socket.on("new_asset", (asset) => {
+            logMessage(`🆕 Nuevo activo: ${asset.name} (ID: ${asset.id})`);
+            console.log("Datos completos:", asset);
+        });
+
+        // Evento cuando se actualiza un activo
+        socket.on("update_asset", (asset) => {
+            logMessage(`🔄 Activo actualizado: ${asset.name} (ID: ${asset.id})`);
+        });
+
+        // Evento cuando se elimina un activo
+        socket.on("delete_asset", (data) => {
+            logMessage(`❌ Activo eliminado: ID ${data.id}`);
+        });
+
+        // Evento si hay un error de autenticación
+        socket.on("connect_error", (err) => {
+            logMessage(`❌ Error de conexión: ${err.message}`);
+        });
+
+        // Función para mostrar mensajes en la página
+        function logMessage(message) {
+            const messagesDiv = document.getElementById("messages");
+            const p = document.createElement("p");
+            p.textContent = message;
+            messagesDiv.appendChild(p);
+        }
+    </script>
+</body>
+</html>
